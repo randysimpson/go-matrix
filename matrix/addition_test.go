@@ -2,7 +2,6 @@ package matrix_test
 
 import (
 	"github.com/randysimpson/go-matrix/matrix"
-	//"go-matrix/matrix"
 	"testing"
 	"reflect"
 )
