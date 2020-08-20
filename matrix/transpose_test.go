@@ -29,44 +29,48 @@ import (
 	"reflect"
 )
 
-func TestAdd(t *testing.T) {
-	var ansA = []float64{3.0, 5.0}
-	var ansB = []float64{8.0, 11.0}
+//test 3 x 3
+func TestTranspose3x3(t *testing.T) {
+	var ansA = []float64{5.0, 4.0, 7.0}
+	var ansB = []float64{4.0, 0.0, 10.0}
+	var ansC = []float64{3.0, 4.0, 3.0}
 	var want [][]float64
 	want = append(want, ansA)
 	want = append(want, ansB)
+	want = append(want, ansC)
 
-	var testA = []float64{1.0, 2.0}
-	var testB = []float64{3.0, 4.0}
+	var testA = []float64{5.0, 4.0, 3.0}
+	var testB = []float64{4.0, 0.0, 4.0}
+	var testC = []float64{7.0, 10.0, 3.0}
 	var a [][]float64
 	a = append(a, testA)
 	a = append(a, testB)
+	a = append(a, testC)
 
-	var testC = []float64{2.0, 3.0}
-	var testD = []float64{5.0, 7.0}
-	var b [][]float64
-	b = append(b, testC)
-	b = append(b, testD)
-
-	if got := matrix.Add(a, b); !reflect.DeepEqual(got, want) {
-			t.Errorf("Add(a, b) = %v, want %v", got, want)
+	if got := matrix.Transpose(a); !reflect.DeepEqual(got, want) {
+			t.Errorf("Transpose(a) = %v, want %v", got, want)
 	}
 }
 
-func TestAddScalar(t *testing.T) {
-	var ansA = []float64{6.0, 7.0}
-	var ansB = []float64{8.0, 9.0}
+//test 4 x 2
+func TestTranspose4x2(t *testing.T) {
+	var ansA = []float64{5.0, 4.0, 7.0, -1.0}
+	var ansB = []float64{4.0, 0.0, 10.0, 8.0}
 	var want [][]float64
 	want = append(want, ansA)
 	want = append(want, ansB)
 
-	var testA = []float64{1.0, 2.0}
-	var testB = []float64{3.0, 4.0}
+	var testA = []float64{5.0, 4.0}
+	var testB = []float64{4.0, 0.0}
+	var testC = []float64{7.0, 10.0}
+	var testD = []float64{-1.0, 8.0}
 	var a [][]float64
 	a = append(a, testA)
 	a = append(a, testB)
+	a = append(a, testC)
+	a = append(a, testD)
 
-	if got := matrix.AddScalar(a, 5.0); !reflect.DeepEqual(got, want) {
-		t.Errorf("AddScalar(a, b) = %v, want %v", got, want)
+	if got := matrix.Transpose(a); !reflect.DeepEqual(got, want) {
+			t.Errorf("Transpose(a) = %v, want %v", got, want)
 	}
 }

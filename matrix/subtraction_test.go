@@ -29,9 +29,10 @@ import (
 	"reflect"
 )
 
-func TestAdd(t *testing.T) {
-	var ansA = []float64{3.0, 5.0}
-	var ansB = []float64{8.0, 11.0}
+//test 2 x 2 minus 2 x 2
+func TestSubtract(t *testing.T) {
+	var ansA = []float64{-1.0, -1.0}
+	var ansB = []float64{-2.0, -3.0}
 	var want [][]float64
 	want = append(want, ansA)
 	want = append(want, ansB)
@@ -48,14 +49,14 @@ func TestAdd(t *testing.T) {
 	b = append(b, testC)
 	b = append(b, testD)
 
-	if got := matrix.Add(a, b); !reflect.DeepEqual(got, want) {
-			t.Errorf("Add(a, b) = %v, want %v", got, want)
+	if got := matrix.Subtract(a, b); !reflect.DeepEqual(got, want) {
+			t.Errorf("Subtract(a, b) = %v, want %v", got, want)
 	}
 }
 
-func TestAddScalar(t *testing.T) {
-	var ansA = []float64{6.0, 7.0}
-	var ansB = []float64{8.0, 9.0}
+func TestSubtractScalar(t *testing.T) {
+	var ansA = []float64{-4.0, -3.0}
+	var ansB = []float64{-2.0, -1.0}
 	var want [][]float64
 	want = append(want, ansA)
 	want = append(want, ansB)
@@ -66,7 +67,7 @@ func TestAddScalar(t *testing.T) {
 	a = append(a, testA)
 	a = append(a, testB)
 
-	if got := matrix.AddScalar(a, 5.0); !reflect.DeepEqual(got, want) {
-		t.Errorf("AddScalar(a, b) = %v, want %v", got, want)
+	if got := matrix.SubtractScalar(a, 5.0); !reflect.DeepEqual(got, want) {
+		t.Errorf("SubtractScalar(a, b) = %v, want %v", got, want)
 	}
 }
