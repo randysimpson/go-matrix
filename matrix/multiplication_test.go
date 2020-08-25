@@ -92,7 +92,7 @@ func TestMultiplyScalar(t *testing.T) {
 	a = append(a, testA)
 	a = append(a, testB)
 
-	if got := matrix.MultiplyScaler(a, 5.0); !reflect.DeepEqual(got, want) {
+	if got := matrix.MultiplyScalar(a, 5.0); !reflect.DeepEqual(got, want) {
 		t.Errorf("MultiplyScaler(a, b) = %v, want %v", got, want)
 	}
 }

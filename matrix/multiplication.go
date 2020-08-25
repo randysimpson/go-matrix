@@ -50,7 +50,7 @@ func Multiply(m1 [][]float64, m2 [][]float64) ([][]float64) {
 }
 
 // MultiplyScaler returns slice of slices to represent the product of a matrix and a scalar.
-func MultiplyScaler(m1 [][]float64, s float64) ([][]float64) {
+func MultiplyScalar(m1 [][]float64, s float64) ([][]float64) {
 	var result [][]float64
 
 	for r := 0; r < len(m1); r++ {

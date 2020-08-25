@@ -81,9 +81,9 @@ Multiply(a [][]float64, b [][]float64) [][]float64
 ```
 Multiply returns slice of slices to represent the product of two matrices.
 
-### func MultiplyScaler
+### func MultiplyScalar
 ```
-MultiplyScaler(a [][]float64, b float64) [][]float64
+MultiplyScalar(a [][]float64, b float64) [][]float64
 ```
 MultiplyScaler returns slice of slices to represent the product of a matrix and a scalar.
 
