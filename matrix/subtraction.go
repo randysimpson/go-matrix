@@ -23,36 +23,41 @@ SOFTWARE.*/
 
 package matrix
 
+// subtractRow uses channel for queuing up result of the slice's being subtracted.
+func subtractRow(minuend []float64, subtrahend []float64, index int, ch chan []float64) {
+	var result []float64
+	result = append(result, float64(index))
+	for i := 0; i < len(minuend); i++ {
+		result = append(result, minuend[i] - subtrahend[i])
+	}
+	ch <- result
+}
+
 // Subtract returns slice of slices to represent two matrices being subtracted.
 func Subtract(m1 [][]float64, m2 [][]float64) ([][]float64) {
 	//check to see if m1 and m2 have the same dimensions
 	var result [][]float64
+	ch := make(chan []float64)
 
 	for r := 0; r < len(m1); r++ {
-		for c := 0; c < len(m1[r]); c++ {
-			val := m1[r][c] - m2[r][c]
-
-			//put into results
-			if len(result) - 1 < r {
-				var inner = []float64{val}
-				result = append(result, inner)
-			} else {
-				//need to add to inner results.
-				result[r] = append(result[r], val)
-			}
-		}
+		go subtractRow(m1[r], m2[r], r, ch)
+		result = append(result, []float64{})
+	}
+	for r := 0; r < len(m1); r++ {
+		rtn := <-ch
+		result[int(rtn[0])] = rtn[1:]
 	}
 
 	return result
 }
 
 // SubtractScalar returns slice of slices to represent the a matrix having a scalar subtracted.
-func SubtractScalar(m1 [][]float64, s float64) ([][]float64) {
+func SubtractScalar(m [][]float64, num float64) ([][]float64) {
 	var result [][]float64
 
-	for r := 0; r < len(m1); r++ {
-		for c := 0; c < len(m1[r]); c++ {
-			val := m1[r][c] - s
+	for r := 0; r < len(m); r++ {
+		for c := 0; c < len(m[r]); c++ {
+			val := m[r][c] - num
 
 			//put into results
 			if len(result) - 1 < r {

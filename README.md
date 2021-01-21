@@ -65,43 +65,43 @@ result matrix: [[3 5] [8 11]]
 
 ### func Add
 ```
-Add(a [][]float64, b [][]float64) [][]float64
+Add(m1 [][]float64, m2 [][]float64) [][]float64
 ```
 Add returns slice of slices to represent the sum of two matrices.
 
 ### func AddScalar
 ```
-AddScalar(a [][]float64, b float64) [][]float64
+AddScalar(m [][]float64, num float64) [][]float64
 ```
 AddScalar returns slice of slices to represent the sum of a matrix and a scalar.
 
 ### func Multiply
 ```
-Multiply(a [][]float64, b [][]float64) [][]float64
+Multiply(m1 [][]float64, m2 [][]float64) [][]float64
 ```
 Multiply returns slice of slices to represent the product of two matrices.
 
 ### func MultiplyScalar
 ```
-MultiplyScalar(a [][]float64, b float64) [][]float64
+MultiplyScalar(m [][]float64, num float64) [][]float64
 ```
 MultiplyScaler returns slice of slices to represent the product of a matrix and a scalar.
 
 ### func Subtract
 ```
-Subtract(a [][]float64, b [][]float64) [][]float64
+Subtract(m1 [][]float64, m2 [][]float64) [][]float64
 ```
 Subtract returns slice of slices to represent two matrices being subtracted.
 
 ### func SubtractScalar
 ```
-SubtractScalar(a [][]float64, b float64) [][]float64
+SubtractScalar(m [][]float64, num float64) [][]float64
 ```
 SubtractScalar returns slice of slices to represent the a matrix having a scalar subtracted.
 
 ### func Transpose
 ```
-Transpose(a [][]float64) [][]float64
+Transpose(m [][]float64) [][]float64
 ```
 Subtract returns slice of slices to represent the transpose of a matrix.
 

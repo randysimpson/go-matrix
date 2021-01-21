@@ -23,36 +23,41 @@ SOFTWARE.*/
 
 package matrix
 
+// addRow uses channel for queuing up result of the slice's being added together.
+func addRow(a []float64, b []float64, index int, ch chan []float64) {
+	var result []float64
+	result = append(result, float64(index))
+	for i := 0; i < len(a); i++ {
+		result = append(result, a[i] + b[i])
+	}
+	ch <- result
+}
+
 // Add returns slice of slices to represent the sum of two matrices.
 func Add(m1 [][]float64, m2 [][]float64) ([][]float64) {
 	//check to see if m1 and m2 have the same dimensions
 	var result [][]float64
+	ch := make(chan []float64)
 
 	for r := 0; r < len(m1); r++ {
-		for c := 0; c < len(m1[r]); c++ {
-			val := m1[r][c] + m2[r][c]
-
-			//put into results
-			if len(result) - 1 < r {
-				var inner = []float64{val}
-				result = append(result, inner)
-			} else {
-				//need to add to inner results.
-				result[r] = append(result[r], val)
-			}
-		}
+		go addRow(m1[r], m2[r], r, ch)
+		result = append(result, []float64{})
+	}
+	for r := 0; r < len(m1); r++ {
+		rtn := <-ch
+		result[int(rtn[0])] = rtn[1:]
 	}
 
 	return result
 }
 
 // AddScalar returns slice of slices to represent the sum of a matrix and a scalar.
-func AddScalar(m1 [][]float64, s float64) ([][]float64) {
+func AddScalar(m [][]float64, num float64) ([][]float64) {
 	var result [][]float64
 
-	for r := 0; r < len(m1); r++ {
-		for c := 0; c < len(m1[r]); c++ {
-			val := m1[r][c] + s
+	for r := 0; r < len(m); r++ {
+		for c := 0; c < len(m[r]); c++ {
+			val := m[r][c] + num
 
 			//put into results
 			if len(result) - 1 < r {

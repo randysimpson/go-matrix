@@ -23,21 +23,28 @@ SOFTWARE.*/
 
 package matrix
 
-// Subtract returns slice of slices to represent the transpose of a matrix.
-func Transpose(m1 [][]float64) ([][]float64) {
-	var result [][]float64
+// transposeCol uses channel for queuing up result of the return matrix rows.
+func transposeCol(m [][]float64, index int, ch chan []float64) {
+	var result []float64
+	result = append(result, float64(index))
+	for r := 0; r < len(m); r++ {
+		result = append(result, m[r][index])
+	}
+	ch <- result
+}
 
-	for r := 0; r < len(m1); r++ {
-		for c := 0; c < len(m1[r]); c++ {
-			//put into results
-			if len(result) - 1 < c {
-				var inner = []float64{m1[r][c]}
-				result = append(result, inner)
-			} else {
-				//need to add to inner results.
-				result[c] = append(result[c], m1[r][c])
-			}
-		}
+// Transpose returns slice of slices to represent the transpose of a matrix.
+func Transpose(m [][]float64) ([][]float64) {
+	var result [][]float64
+	ch := make(chan []float64)
+
+	for c := 0; c < len(m[0]); c++ {
+		go transposeCol(m, c, ch)
+		result = append(result, []float64{})
+	}
+	for c := 0; c < len(m[0]); c++ {
+		rtn := <-ch
+		result[int(rtn[0])] = rtn[1:]
 	}
 
 	return result

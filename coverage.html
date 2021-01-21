@@ -99,13 +99,41 @@ SOFTWARE.*/
 
 package matrix
 
+// addRow uses channel for queuing up result of the slice's being added together.
+func addRow(a []float64, b []float64, index int, ch chan []float64) <span class="cov8" title="1">{
+        var result []float64
+        result = append(result, float64(index))
+        for i := 0; i &lt; len(a); i++ </span><span class="cov8" title="1">{
+                result = append(result, a[i] + b[i])
+        }</span>
+        <span class="cov8" title="1">ch &lt;- result</span>
+}
+
+// Add returns slice of slices to represent the sum of two matrices.
 func Add(m1 [][]float64, m2 [][]float64) ([][]float64) <span class="cov8" title="1">{
         //check to see if m1 and m2 have the same dimensions
         var result [][]float64
+        ch := make(chan []float64)
 
         for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        val := m1[r][c] + m2[r][c]
+                go addRow(m1[r], m2[r], r, ch)
+                result = append(result, []float64{})
+        }</span>
+        <span class="cov8" title="1">for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
+                rtn := &lt;-ch
+                result[int(rtn[0])] = rtn[1:]
+        }</span>
+
+        <span class="cov8" title="1">return result</span>
+}
+
+// AddScalar returns slice of slices to represent the sum of a matrix and a scalar.
+func AddScalar(m [][]float64, num float64) ([][]float64) <span class="cov8" title="1">{
+        var result [][]float64
+
+        for r := 0; r &lt; len(m); r++ </span><span class="cov8" title="1">{
+                for c := 0; c &lt; len(m[r]); c++ </span><span class="cov8" title="1">{
+                        val := m[r][c] + num
 
                         //put into results
                         if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
@@ -120,27 +148,7 @@ func Add(m1 [][]float64, m2 [][]float64) ([][]float64) <span class="cov8" title=
 
         <span class="cov8" title="1">return result</span>
 }
-
-func AddScalar(m1 [][]float64, s float64) ([][]float64) <span class="cov8" title="1">{
-        var result [][]float64
-
-        for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        val := m1[r][c] + s
-
-                        //put into results
-                        if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
-                                var inner = []float64{val}
-                                result = append(result, inner)
-                        }</span> else<span class="cov8" title="1"> {
-                                //need to add to inner results.
-                                result[r] = append(result[r], val)
-                        }</span>
-                }
-        }
-
-        <span class="cov8" title="1">return result</span>
-}</pre>
+</pre>
 
                 <pre class="file" id="file1" style="display: none">/*
 MIT License
@@ -167,37 +175,45 @@ SOFTWARE.*/
 
 package matrix
 
+// multiplyRow uses channel for queuing up result of the return matrix rows.
+func multiplyRow(s []float64, s2 [][]float64, index int, ch chan []float64) <span class="cov8" title="1">{
+        var result []float64
+        result = append(result, float64(index))
+        for c := 0; c &lt; len(s2[0]); c++ </span><span class="cov8" title="1">{
+                val := 0.0
+                for r := 0; r &lt; len(s); r++ </span><span class="cov8" title="1">{
+                        val += s[r] * s2[r][c]
+                }</span>
+                <span class="cov8" title="1">result = append(result, val)</span>
+        }
+        <span class="cov8" title="1">ch &lt;- result</span>
+}
+
+// Multiply returns slice of slices to represent the product of two matrices.
 func Multiply(m1 [][]float64, m2 [][]float64) ([][]float64) <span class="cov8" title="1">{
         //check to see if these can mulitply successfull by shape or throw error.
         var result [][]float64
+        ch := make(chan []float64)
 
         for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m2[0]); c++ </span><span class="cov8" title="1">{
-                        val := 0.0
-                        for m1c := 0; m1c &lt; len(m1[r]); m1c++ </span><span class="cov8" title="1">{
-                                val += m1[r][m1c] * m2[m1c][c]
-                        }</span>
-
-                        //put into results
-                        <span class="cov8" title="1">if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
-                                var inner = []float64{val}
-                                result = append(result, inner)
-                        }</span> else<span class="cov8" title="1"> {
-                                //need to add to inner results.
-                                result[r] = append(result[r], val)
-                        }</span>
-                }
-        }
+                go multiplyRow(m1[r], m2, r, ch)
+                result = append(result, []float64{})
+        }</span>
+        <span class="cov8" title="1">for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
+                rtn := &lt;-ch
+                result[int(rtn[0])] = rtn[1:]
+        }</span>
 
         <span class="cov8" title="1">return result</span>
 }
 
-func MultiplyScalar(m1 [][]float64, s float64) ([][]float64) <span class="cov8" title="1">{
+// MultiplyScaler returns slice of slices to represent the product of a matrix and a scalar.
+func MultiplyScalar(m [][]float64, num float64) ([][]float64) <span class="cov8" title="1">{
         var result [][]float64
 
-        for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        val := m1[r][c] * s
+        for r := 0; r &lt; len(m); r++ </span><span class="cov8" title="1">{
+                for c := 0; c &lt; len(m[r]); c++ </span><span class="cov8" title="1">{
+                        val := m[r][c] * num
 
                         //put into results
                         if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
@@ -239,34 +255,41 @@ SOFTWARE.*/
 
 package matrix
 
+// subtractRow uses channel for queuing up result of the slice's being subtracted.
+func subtractRow(minuend []float64, subtrahend []float64, index int, ch chan []float64) <span class="cov8" title="1">{
+        var result []float64
+        result = append(result, float64(index))
+        for i := 0; i &lt; len(minuend); i++ </span><span class="cov8" title="1">{
+                result = append(result, minuend[i] - subtrahend[i])
+        }</span>
+        <span class="cov8" title="1">ch &lt;- result</span>
+}
+
+// Subtract returns slice of slices to represent two matrices being subtracted.
 func Subtract(m1 [][]float64, m2 [][]float64) ([][]float64) <span class="cov8" title="1">{
         //check to see if m1 and m2 have the same dimensions
         var result [][]float64
+        ch := make(chan []float64)
 
         for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        val := m1[r][c] - m2[r][c]
-
-                        //put into results
-                        if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
-                                var inner = []float64{val}
-                                result = append(result, inner)
-                        }</span> else<span class="cov8" title="1"> {
-                                //need to add to inner results.
-                                result[r] = append(result[r], val)
-                        }</span>
-                }
-        }
+                go subtractRow(m1[r], m2[r], r, ch)
+                result = append(result, []float64{})
+        }</span>
+        <span class="cov8" title="1">for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
+                rtn := &lt;-ch
+                result[int(rtn[0])] = rtn[1:]
+        }</span>
 
         <span class="cov8" title="1">return result</span>
 }
 
-func SubtractScalar(m1 [][]float64, s float64) ([][]float64) <span class="cov8" title="1">{
+// SubtractScalar returns slice of slices to represent the a matrix having a scalar subtracted.
+func SubtractScalar(m [][]float64, num float64) ([][]float64) <span class="cov8" title="1">{
         var result [][]float64
 
-        for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        val := m1[r][c] - s
+        for r := 0; r &lt; len(m); r++ </span><span class="cov8" title="1">{
+                for c := 0; c &lt; len(m[r]); c++ </span><span class="cov8" title="1">{
+                        val := m[r][c] - num
 
                         //put into results
                         if len(result) - 1 &lt; r </span><span class="cov8" title="1">{
@@ -308,21 +331,29 @@ SOFTWARE.*/
 
 package matrix
 
-func Transpose(m1 [][]float64) ([][]float64) <span class="cov8" title="1">{
-        var result [][]float64
+// transposeCol uses channel for queuing up result of the return matrix rows.
+func transposeCol(m [][]float64, index int, ch chan []float64) <span class="cov8" title="1">{
+        var result []float64
+        result = append(result, float64(index))
+        for r := 0; r &lt; len(m); r++ </span><span class="cov8" title="1">{
+                result = append(result, m[r][index])
+        }</span>
+        <span class="cov8" title="1">ch &lt;- result</span>
+}
 
-        for r := 0; r &lt; len(m1); r++ </span><span class="cov8" title="1">{
-                for c := 0; c &lt; len(m1[r]); c++ </span><span class="cov8" title="1">{
-                        //put into results
-                        if len(result) - 1 &lt; c </span><span class="cov8" title="1">{
-                                var inner = []float64{m1[r][c]}
-                                result = append(result, inner)
-                        }</span> else<span class="cov8" title="1"> {
-                                //need to add to inner results.
-                                result[c] = append(result[c], m1[r][c])
-                        }</span>
-                }
-        }
+// Transpose returns slice of slices to represent the transpose of a matrix.
+func Transpose(m [][]float64) ([][]float64) <span class="cov8" title="1">{
+        var result [][]float64
+        ch := make(chan []float64)
+
+        for c := 0; c &lt; len(m[0]); c++ </span><span class="cov8" title="1">{
+                go transposeCol(m, c, ch)
+                result = append(result, []float64{})
+        }</span>
+        <span class="cov8" title="1">for c := 0; c &lt; len(m[0]); c++ </span><span class="cov8" title="1">{
+                rtn := &lt;-ch
+                result[int(rtn[0])] = rtn[1:]
+        }</span>
 
         <span class="cov8" title="1">return result</span>
 }</pre>
